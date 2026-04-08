@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "C14-NP1"
+version = "0.1.0"
+description = "Projeto da matéria de Engenharia de Software"
+authors = [
+  { name="Guilherme Ribeiro" },
+  { name="Luan Robert" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies = [
+  "requests"
+]
