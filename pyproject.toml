@@ -17,5 +17,9 @@ dependencies = [
   "requests>=2.33.1"
 ]
 
+[project.scripts]
+c14-np1 = "app:main"
+
 [tool.setuptools]
 packages = ["downloader", "gui"]
+py-modules = ["app"]
