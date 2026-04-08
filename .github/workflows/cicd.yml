@@ -90,7 +90,7 @@ jobs:
     name: Code Coverage
     runs-on: ubuntu-latest
     needs:
-      - build
+      - tests
 
     steps:
       - uses: actions/checkout@v4
@@ -113,12 +113,17 @@ jobs:
           name: coverage-report
           path: htmlcov/
 
+  # ETAPA 4 — DEPLOY / PUBLICAÇÃO
+
   pypi-publish:
+    name: Publish to PyPI
     runs-on: ubuntu-latest
     needs:
       - build
+      - coverage
     permissions:
       id-token: write
+    if: ${{ false }}
 
     environment:
       name: pypi
@@ -141,12 +146,17 @@ jobs:
         with:
           packages-dir: dist/
 
-  # ETAPA 4 — NOTIFICAÇÃO
+  # ETAPA 5 — NOTIFICAÇÃO
 
   notification:
     name: Send Notification
     runs-on: ubuntu-latest
-    needs: [tests]
+    needs:
+      - tests
+      - build
+      - coverage
+      - pypi-publish
+    if: always()
 
     steps:
       - name: Checkout code
