@@ -18,5 +18,4 @@ dependencies = [
 ]
 
 [tool.setuptools]
-where = ["."]
-packages = ["downloader*", "gui*"]
+packages = ["downloader", "gui"]
