@@ -1,4 +1,4 @@
-name: Upload Python Package
+name: CI/CD Pipeline
 
 on:
   push:
@@ -13,6 +13,9 @@ permissions:
   contents: read
 
 jobs:
+
+  # ETAPA 1 — TESTES UNITÁRIOS
+
   tests:
     runs-on: ubuntu-latest
 
@@ -44,6 +47,8 @@ jobs:
         with:
           name: test-report
           path: report.xml
+
+  # ETAPA 2 — BUILD / EMPACOTAMENTO
 
   build:
     runs-on: ubuntu-latest
@@ -79,12 +84,46 @@ jobs:
           name: release-dists
           path: dist/
 
+  # ETAPA 3 — COBERTURA DE CÓDIGO
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    needs:
+      - tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: |
+          python -m pytest --cov=downloader --cov=gui --cov=app --cov-report=html
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov/
+
+  # ETAPA 4 — DEPLOY / PUBLICAÇÃO
+
   pypi-publish:
+    name: Publish to PyPI
     runs-on: ubuntu-latest
     needs:
       - build
+      - coverage
     permissions:
       id-token: write
+    if: ${{ false }}
 
     environment:
       name: pypi
@@ -106,3 +145,30 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+
+  # ETAPA 5 — NOTIFICAÇÃO
+
+  notification:
+    name: Send Notification
+    runs-on: ubuntu-latest
+    needs:
+      - tests
+      - build
+      - coverage
+      - pypi-publish
+    if: always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install mailutils
+        run: sudo apt-get update && sudo apt-get install -y mailutils  
+
+      - name: Make script executable
+        run: chmod +x script/sendNotification.sh
+
+      - name: Execute external script to send email
+        run: sh script/sendNotification.sh
+        env:
+          NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
