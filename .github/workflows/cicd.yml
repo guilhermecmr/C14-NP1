@@ -1,0 +1,170 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+      branches: 
+        - main
+        - guilherme
+        - luan
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ETAPA 1 — TESTES UNITÁRIOS
+
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          python -m pytest --junitxml=report.xml
+
+      - name: Test success message
+        if: success()
+        run: echo "Tests passed successfully"
+
+      - name: Test failure message
+        if: failure()
+        run: echo "Tests failed"
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: report.xml
+
+  # ETAPA 2 — BUILD / EMPACOTAMENTO
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Build release distributions
+        run: |
+          python -m build
+
+      - name: Build success message
+        if: success()
+        run: echo "Build completed successfully"
+
+      - name: Build failure message
+        if: failure()
+        run: echo "Build failed"      
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-dists
+          path: dist/
+
+  # ETAPA 3 — COBERTURA DE CÓDIGO
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    needs:
+      - tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: |
+          python -m pytest --cov=downloader --cov=gui --cov=app --cov-report=html
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov/
+
+  # ETAPA 4 — DEPLOY / PUBLICAÇÃO
+
+  pypi-publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - coverage
+    permissions:
+      id-token: write
+
+    environment:
+      name: pypi
+      url: https://pypi.org/project/c14-np1/
+
+    steps:
+      - name: Retrieve release distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: release-dists
+          path: dist/
+
+      - name: Publish release distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+
+  # ETAPA 5 — NOTIFICAÇÃO
+
+  notification:
+    name: Send Notification
+    runs-on: ubuntu-latest
+    needs:
+      - tests
+      - build
+      - coverage
+      - pypi-publish
+    if: always()
+
+    env:
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+      NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+
+      TESTS_STATUS: ${{ needs.tests.result }}
+      BUILD_STATUS: ${{ needs.build.result }}
+      COVERAGE_STATUS: ${{ needs.coverage.result }}
+      DEPLOY_STATUS: ${{ needs.pypi-publish.result }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run notification script
+        run: python scripts/send_notification.py
