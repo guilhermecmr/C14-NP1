@@ -125,7 +125,3 @@ def test_write_csv_log_none_total(tmp_path):
     write_csv_log(str(output), "http://teste", [seg], None, 1, 0.0)
 
     assert "?" in output.read_text()
-
-# Teste falho 
-def test_format_bytes():
-    assert format_bytes(1000) == "2.00 KiB"

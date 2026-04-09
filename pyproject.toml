@@ -12,7 +12,6 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.8"
-
 dependencies = [
   "requests>=2.33.1"
 ]
@@ -22,8 +21,10 @@ c14-np1 = "app:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["downloader", "gui"]
 py-modules = ["app"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
