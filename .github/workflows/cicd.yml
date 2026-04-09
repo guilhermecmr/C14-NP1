@@ -157,6 +157,11 @@ jobs:
       EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
       NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
 
+      TESTS_STATUS: ${{ needs.tests.result }}
+      BUILD_STATUS: ${{ needs.build.result }}
+      COVERAGE_STATUS: ${{ needs.coverage.result }}
+      DEPLOY_STATUS: ${{ needs.pypi-publish.result }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

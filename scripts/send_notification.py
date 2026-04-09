@@ -9,13 +9,19 @@ def main():
     smtp_user = os.environ.get("EMAIL_USER")
     smtp_pass = os.environ.get("EMAIL_PASS")
 
+    tests = os.environ.get("TESTS_STATUS", "unknown")
+    build = os.environ.get("BUILD_STATUS", "unknown")
+    coverage = os.environ.get("COVERAGE_STATUS", "unknown")
+    deploy = os.environ.get("DEPLOY_STATUS", "unknown")    
+
     if not email_to:
         raise RuntimeError("NOTIFICATION_EMAIL não definida.")
     if not smtp_user or not smtp_pass:
         raise RuntimeError("EMAIL_USER/EMAIL_PASS não definidos.")
 
-    body = "Pipeline finalizado com sucesso!"
     subject = "CI/CD Status"
+    body = f"""Pipeline finalizado!\n\nResultados:\n
+    - Tests: {tests.upper()}\n- Build: {build.upper()}\n- Coverage: {coverage.upper()}\n- Deploy: {deploy.upper()}\n"""
 
     msg = MIMEText(body, "plain", "utf-8")
     msg["Subject"] = subject
