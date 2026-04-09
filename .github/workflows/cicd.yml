@@ -123,16 +123,10 @@ jobs:
       - coverage
     permissions:
       id-token: write
-    if: ${{ false }}
 
     environment:
       name: pypi
-      # OPTIONAL: uncomment and update to include your PyPI project URL in the deployment status:
-      # url: https://pypi.org/p/YOURPROJECT
-      #
-      # ALTERNATIVE: if your GitHub Release name is the PyPI project version string
-      # ALTERNATIVE: exactly, uncomment the following line instead:
-      # url: https://pypi.org/project/YOURPROJECT/${{ github.event.release.name }}
+      url: https://pypi.org/project/c14-np1/
 
     steps:
       - name: Retrieve release distributions
@@ -158,17 +152,19 @@ jobs:
       - pypi-publish
     if: always()
 
+    env:
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+      NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+
+      TESTS_STATUS: ${{ needs.tests.result }}
+      BUILD_STATUS: ${{ needs.build.result }}
+      COVERAGE_STATUS: ${{ needs.coverage.result }}
+      DEPLOY_STATUS: ${{ needs.pypi-publish.result }}
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Install mailutils
-        run: sudo apt-get update && sudo apt-get install -y mailutils  
-
-      - name: Make script executable
-        run: chmod +x script/sendNotification.sh
-
-      - name: Execute external script to send email
-        run: sh script/sendNotification.sh
-        env:
-          NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+      - name: Run notification script
+        run: python scripts/send_notification.py

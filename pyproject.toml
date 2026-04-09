@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "c14-np1"
-version = "0.1.0"
+version = "0.1.2"
 description = "Projeto da matéria de Engenharia de Software"
 authors = [
   { name="Guilherme Ribeiro" },
@@ -12,7 +12,6 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.8"
-
 dependencies = [
   "requests>=2.33.1"
 ]
@@ -21,5 +20,11 @@ dependencies = [
 c14-np1 = "app:main"
 
 [tool.setuptools]
-packages = ["downloader", "gui"]
+package-dir = {"" = "src"}
 py-modules = ["app"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
