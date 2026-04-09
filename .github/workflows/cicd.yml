@@ -158,17 +158,14 @@ jobs:
       - pypi-publish
     if: always()
 
+    env:
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+      NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Install mailutils
-        run: sudo apt-get update && sudo apt-get install -y mailutils  
-
-      - name: Make script executable
-        run: chmod +x script/sendNotification.sh
-
-      - name: Execute external script to send email
-        run: sh script/sendNotification.sh
-        env:
-          NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+      - name: Run notification script
+        run: python script/sendNotification.py
