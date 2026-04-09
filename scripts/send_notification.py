@@ -20,8 +20,7 @@ def main():
         raise RuntimeError("EMAIL_USER/EMAIL_PASS não definidos.")
 
     subject = "CI/CD Status"
-    body = f"""Pipeline finalizado!\n\nResultados:\n
-    - Tests: {tests.upper()}\n- Build: {build.upper()}\n- Coverage: {coverage.upper()}\n- Deploy: {deploy.upper()}\n"""
+    body = f"""Pipeline finalizado!\n\nResultados:\n- Tests: {tests.upper()}\n- Build: {build.upper()}\n- Coverage: {coverage.upper()}\n- Deploy: {deploy.upper()}\n"""
 
     msg = MIMEText(body, "plain", "utf-8")
     msg["Subject"] = subject
