@@ -162,4 +162,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run notification script
-        run: python script/sendNotification.py
+        run: python scripts/send_notification.py
