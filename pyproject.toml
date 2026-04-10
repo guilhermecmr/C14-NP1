@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "c14-np1"
-version = "0.1.5"
+version = "0.1.6"
 description = "Projeto da matéria de Engenharia de Software"
 authors = [
   { name="Guilherme Ribeiro" },
