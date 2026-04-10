@@ -171,10 +171,89 @@ Alguns arquivos públicos que podem ser usados para validar a aplicação:
 
 ## Uso de IA
 
-Ferramentas de IA foram utilizadas como apoio para:
+Ferramentas de IA foram utilizadas como apoio em diferentes etapas do desenvolvimento do projeto. Abaixo estão os usos reais de prompts e respostas:
 
-- revisão da estrutura do workflow CI/CD
-- refinamento da documentação
-- organização incremental das etapas do pipeline
+---
 
-As sugestões geradas foram revisadas e adaptadas manualmente antes de serem incorporadas ao projeto.
+### 1. Configuração da Build (pyproject.toml)
+
+**Prompt:**
+
+    Gere um pyproject.toml para build, com campos detalhando oq devo preencher. Apenas envie o arquivo.
+
+**Resposta:**
+
+``` toml
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seu_pacote"            # Nome do pacote
+version = "0.1.0"              # Versão
+description = "Descrição curta"
+authors = [
+  { name = "Seu Nome", email = "seu@email.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  # "numpy>=2.0"
+]
+```
+
+**Aplicação no projeto:** Esse modelo foi utilizado como base para a
+criação do arquivo `pyproject.toml`, sendo necessário pesquisa adicional para
+incluir dependências reais, configuração de pacotes e scripts de
+execução.
+
+---
+
+### 2. Erro de Deploy no PyPI
+
+**Prompt:**
+
+    Como resolver este problema de deploy do PyPI, responda objetivamente o motivo e resolução:
+    Uploading c14_np1-0.1.2-py3-none-any.whl  
+    INFO Response from https://upload.pypi.org/legacy/: 400 Bad Request  
+    File already exists ('c14_np1-0.1.2-py3-none-any.whl')
+
+**Resposta:**
+
+Motivo: O erro ocorre porque você está tentando enviar um arquivo
+com o mesmo nome e versão que já existe no PyPI. O PyPI não permite
+sobrescrever artefatos (mesmo que o conteúdo seja idêntico).
+
+Resolução:
+Você tem 2 opções válidas:
+
+1.  Incrementar a versão (recomendado)\
+    Atualize a versão no projeto (por exemplo, `pyproject.toml`):
+```{=html}
+<!-- -->
+```
+    0.1.2 → 0.1.3
+Depois gere e faça o upload novamente.
+
+2.  Remover a versão existente (não recomendado)\
+    Acessar o projeto no PyPI e deletar a release correspondente.
+
+**Aplicação no projeto:** Essa explicação foi utilizada para definir a
+estratégia de incremento manual de versão a cada novo deploy para evitar
+falhas no pipeline CI/CD.
+
+---
+
+### 3. Uso do GitHub Copilot no VS Code
+
+**Ferramenta:**
+GitHub Copilot integrado ao Visual Studio Code.
+
+**Uso realizado:**
+Sugestões automáticas de código durante o desenvolvimento, incluindo:
+
+- autocompletar de funções e estruturas básicas
+- sugestões de testes unitários com `pytest`
+
+**Aplicação no projeto:**
+As sugestões foram utilizadas para acelerar o desenvolvimento, sendo revisadas e ajustadas antes de serem incorporadas ao código final.
