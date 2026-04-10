@@ -96,13 +96,10 @@ Gera a distribuição do pacote Python com `python -m build` e publica o conteú
 3. `coverage`
 Executa os testes com cobertura e publica o relatório HTML como artifact.
 
-4. `pypi-test-publish`
-Publica automaticamente o pacote no TestPyPI a cada push na branch `main`, permitindo validação contínua do processo de deploy sem conflitos de versão.
-
-5. `pypi-publish`
+4. `pypi-publish`
 Publica o pacote no PyPI após o sucesso das etapas de build e cobertura.
 
-6. `notification`
+5. `notification`
 Executa um script Python externo para enviar um e-mail com o resumo final do pipeline.
 
 ## Paralelismo do Pipeline
@@ -117,19 +114,11 @@ Após a etapa `tests`, os jobs `build` e `coverage` podem prosseguir de forma in
 
 ## Deploy
 
-O deploy adotado neste projeto segue uma estratégia de dois níveis caracterizando deploy de artefato de build:
-
-- **Deploy contínuo (TestPyPI):** a cada push na branch `main`, o pacote é publicado automaticamente no TestPyPI, permitindo validação frequente do processo de empacotamento e distribuição.
-
-- **Deploy oficial (PyPI):** a publicação no PyPI ocorre apenas em eventos de release, garantindo que apenas versões estáveis sejam disponibilizadas.
+O deploy adotado neste projeto é a publicação do pacote Python no PyPI, caracterizando deploy de artefato de build.
 
 Projeto no PyPI:
 
 - `https://pypi.org/project/c14-np1/`
-
-Projeto no TestPyPI:
-
-- `https://test.pypi.org/project/c14-np1/`
 
 Para a publicação automática funcionar, o repositório precisa estar configurado no PyPI como Trusted Publisher ou usar autenticação por token de API.
 
