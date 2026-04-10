@@ -12,7 +12,6 @@ def main():
     tests = os.environ.get("TESTS_STATUS", "unknown")
     build = os.environ.get("BUILD_STATUS", "unknown")
     coverage = os.environ.get("COVERAGE_STATUS", "unknown")
-    deploy_testpypi = os.environ.get("DEPLOY_TESTPYPI_STATUS", "unknown")
     deploy = os.environ.get("DEPLOY_STATUS", "unknown")    
 
     if not email_to:
@@ -21,7 +20,7 @@ def main():
         raise RuntimeError("EMAIL_USER/EMAIL_PASS não definidos.")
 
     subject = "CI/CD Status"
-    body = f"""Pipeline finalizado!\n\nResultados:\n- Tests: {tests.upper()}\n- Build: {build.upper()}\n- Coverage: {coverage.upper()}\n- Deploy TestPyPI: {deploy_testpypi.upper()}\n- Deploy PyPI: {deploy.upper()}\n"""
+    body = f"""Pipeline finalizado!\n\nResultados:\n- Tests: {tests.upper()}\n- Build: {build.upper()}\n- Coverage: {coverage.upper()}\n- Deploy: {deploy.upper()}\n"""
 
     msg = MIMEText(body, "plain", "utf-8")
     msg["Subject"] = subject

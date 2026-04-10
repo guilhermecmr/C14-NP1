@@ -113,40 +113,12 @@ jobs:
 
   # ETAPA 4 — DEPLOY / PUBLICAÇÃO
 
-  # Deploy no TestPyPI para pushes na branch main
-  pypi-test-publish:
-    name: Publish to TestPyPI
-    runs-on: ubuntu-latest
-    needs:
-      - build
-      - coverage
-    if: github.event_name == 'push'
-
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/project/c14-np1/
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-dists
-          path: dist/
-
-      - name: Publish to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
-          packages-dir: dist/
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-
-  # Deploy no PyPI para releases
   pypi-publish:
     name: Publish to PyPI
     runs-on: ubuntu-latest
     needs:
       - build
       - coverage
-    if: github.event_name == 'release' 
     permissions:
       id-token: write
 
@@ -175,7 +147,6 @@ jobs:
       - tests
       - build
       - coverage
-      - pypi-test-publish
       - pypi-publish
     if: always()
 
@@ -187,8 +158,7 @@ jobs:
       TESTS_STATUS: ${{ needs.tests.result }}
       BUILD_STATUS: ${{ needs.build.result }}
       COVERAGE_STATUS: ${{ needs.coverage.result }}
-      DEPLOY_TESTPYPI_STATUS: ${{ needs.pypi-test-publish.result }}
-      DEPLOY_PYPI_STATUS: ${{ needs.pypi-publish.result }}
+      DEPLOY_STATUS: ${{ needs.pypi-publish.result }}
 
     steps:
       - name: Checkout code
