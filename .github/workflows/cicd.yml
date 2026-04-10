@@ -122,10 +122,6 @@ jobs:
       - coverage
     if: github.event_name == 'push'
 
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/project/c14-np1/
-
     steps:
       - uses: actions/download-artifact@v4
         with:
