@@ -122,6 +122,11 @@ Projeto no PyPI:
 
 Para a publicação automática funcionar, o repositório precisa estar configurado no PyPI como Trusted Publisher ou usar autenticação por token de API.
 
+### Observação sobre versionamento
+
+O PyPI não permite sobrescrever versões já publicadas.  
+Portanto, é necessário incrementar manualmente a versão no arquivo `pyproject.toml` a cada novo deploy.
+
 ## Notificação por E-mail
 
 A etapa de notificação utiliza o script [`send_notification.py`](/home/luan/Documentos/Projetos/C14-NP1/scripts/send_notification.py ) e depende dos seguintes secrets no GitHub Actions:
